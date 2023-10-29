@@ -1,9 +1,14 @@
+import nltk
 import pandas as pd
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
-from sklearn.metrics import classification_report
 
+import warnings
+warnings.filterwarnings("ignore")
 
 # Category Names
 category_names = {0: "Fire", 1: "Crime", 2: "Health"}
@@ -38,7 +43,28 @@ data = {
 df = pd.DataFrame(data)
 
 # Text preprocessing and Feature Extraction
-df["Description"] = df["Description"].str.replace(r"[^\w\s]", "").str.lower()
+df["Description"] = (
+    df["Description"].str.replace(r"[^\w\s]", "").str.lower()
+)  # Convert to lowercase
+df["Description"] = df["Description"].str.replace(r"[^\w\s]", "")  # Remove punctuation
+
+# Tokenization
+df["Description"] = df["Description"].apply(nltk.word_tokenize)
+
+# Stop Word Removal
+stop_words = set(stopwords.words("english"))
+df["Description"] = df["Description"].apply(
+    lambda tokens: [word for word in tokens if word not in stop_words]
+)
+
+# Stemming
+stemmer = PorterStemmer()
+df["Description"] = df["Description"].apply(
+    lambda tokens: [stemmer.stem(word) for word in tokens]
+)
+
+# Join the tokens back into a single string
+df["Description"] = df["Description"].apply(' '.join)
 
 print(df["Description"])
 
