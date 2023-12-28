@@ -45,8 +45,10 @@ df = pd.DataFrame(data)
 # Text preprocessing and Feature Extraction
 df["Description"] = (
     df["Description"].str.replace(r"[^\w\s]", "").str.lower()
-)  # Convert to lowercase
-df["Description"] = df["Description"].str.replace(r"[^\w\s]", "")  # Remove punctuation
+)
+
+# Convert to lowercase
+# df["Description"] = df["Description"].str.replace(r"[^\w\s]", "")  # Remove punctuation
 
 # Tokenization
 df["Description"] = df["Description"].apply(nltk.word_tokenize)
